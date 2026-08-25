@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  quality:
+    name: Quality Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check Out Repository
+        uses: actions/checkout@v7
+
+      - name: Set Up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version-file: ".python-version"
+
+      - name: Install Uv
+        uses: astral-sh/setup-uv@v10
+        with:
+          version: "0.11.33"
+          enable-cache: false
+
+      - name: Sync dependencies
+        run: uv sync --locked --dev
+
+      - name: Run Quality Check
+        run: make check
